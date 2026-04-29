@@ -18,7 +18,7 @@ git clone https://github.com/abacax6/taskmanager
 ```
 
 ## Como executar
-1. Abrindo o seu terminal no diretório onde você clonou o repositório, digite:
+1. Abrindo o seu terminal na pasta "taskmanager", dentro do diretório onde você clonou o repositório, digite:
 ```bash
 python main.py
 ```
