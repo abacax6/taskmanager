@@ -80,7 +80,7 @@ def update_task(task_id, new_status):
         
     elif new_status not in VALID_STATUS:
         print(f"{BOLD}{RED}Status inválido.{CRESET}")
-        print(f"{BOLD}Use um destes: {CRESET}{CYAN}{'| '.join(VALID_STATUS)}{CRESET}") #Método .join() servindo para CONCATENAR as strings contidas na lista dos status válidos, com ', ' sendo o separador
+        #print(f"{BOLD}Use um destes: {CRESET}{CYAN}{'| '.join(VALID_STATUS)}{CRESET}") #Método .join() servindo para CONCATENAR as strings contidas na lista dos status válidos, com ', ' sendo o separador
         
     else:
         TASK_LIST[task_id]["status"] = new_status
@@ -126,51 +126,75 @@ def main():
         clear()
         menu()
         option = input(f"\n{BOLD}@ - Escolha uma opção: {CRESET}")
+        match option:
+            case "1":
+                clear()
+                print(f"******** {BOLD}{C_CREATETASK}NOVA  TAREFA{CRESET} ********")
+                print("*" * 30 + "\n")
+                title = input(f"{BOLD}Título: {CRESET}")
+                description = input(f"{BOLD}Descrição: {CRESET}")
+                create_task(title, description)
 
-        if option == "1":
-            clear()
-            print(f"******** {BOLD}{C_CREATETASK}NOVA  TAREFA{CRESET} ********")
-            print("*" * 30 + "\n")
-            title = input(f"{BOLD}Título: {CRESET}")
-            description = input(f"{BOLD}Descrição: {CRESET}")
-            create_task(title, description)
+            case "2":
+                clear()
+                list_tasks()
 
-        elif option == "2":
-            clear()
-            list_tasks()
+            case "3":
+                clear()
+                print(f"****** {BOLD}{C_UPDATETASK}ATUALIZAR STATUS{CRESET} ******")
+                print("*" * 30 + "\n")
+                try:
+                    task_id = int(input(f"{BOLD}ID da tarefa: {CRESET}"))
+                except ValueError:
+                    print(f"{BOLD}{RED}ID inválido. Precisa ser um número!{CRESET}")
+                    back()
+                    continue
+                
+                if task_id not in TASK_LIST:
+                    print(f"{BOLD}{RED}ID inválido, tarefa não encontrada.{CRESET}")
+                    back()
+                    continue
 
-        elif option == "3":
-            clear()
-            print(f"****** {BOLD}{C_UPDATETASK}ATUALIZAR STATUS{CRESET} ******")
-            print("*" * 30 + "\n")
-            try:
-                task_id = int(input(f"{BOLD}ID da tarefa: {CRESET}"))
-                status = input(f"{BOLD}Novo status: {CRESET}").lower()
+                print(f"{BOLD}Novo status: {CRESET}")
+                print(f"1 - {CYAN}to do{CRESET}\n2 - {CYAN}in progress{CRESET}\n3 - {CYAN}completed{CRESET}")
+                try:
+                    status = int(input(f"{BOLD}@ - Escolha uma opção: {CRESET}"))
+                except ValueError:
+                    print(f"{BOLD}{RED}Status inválido.{CRESET}")
+                    back()
+                    continue
 
+                match status:
+                        case 1:
+                            status = "to do"
+                        case 2:
+                            status = "in progress"
+                        case 3:
+                            status = "completed"
+                        case _:
+                            print(f"{BOLD}{RED}Status inválido.{CRESET}")
+                            back()
+                            continue
+                
                 update_task(task_id, status)
 
-            except ValueError:
-                print(f"{BOLD}{RED}ID inválido. Precisa ser um número!{CRESET}")
-                back()
+            case "4":
+                clear()
+                print(f"******* {BOLD}{C_DELETETASK}EXCLUIR TAREFA{CRESET} *******")
+                print("*" * 30 + "\n")
+                try:
+                    task_id = int(input(f"{BOLD}ID da tarefa: {CRESET}"))
+                    delete_task(task_id)
+                except ValueError:
+                    print(f"{BOLD}{RED}ID inválido. Precisa ser um número!{CRESET}")
+                    back()
 
-        elif option == "4":
-            clear()
-            print(f"******* {BOLD}{C_DELETETASK}EXCLUIR TAREFA{CRESET} *******")
-            print("*" * 30 + "\n")
-            try:
-                task_id = int(input(f"{BOLD}ID da tarefa: {CRESET}"))
-                delete_task(task_id)
-            except ValueError:
-                print(f"{BOLD}{RED}ID inválido. Precisa ser um número!{CRESET}")
-                back()
-
-        elif option == "0":
-            print(f"{BOLD}{RED}Saindo...{CRESET}")
-            break
-
-        else:
-            print(f"{BOLD}{RED}*Opção inválida.{CRESET}")
-
+            case "0":
+                print(f"{BOLD}{RED}Saindo...{CRESET}")
+                break
+            case _:
+                print(f"{BOLD}{RED}*Opção inválida.{CRESET}")
 
 #Chamada da função principal
-main()
+if __name__ == "__main__":
+    main()
