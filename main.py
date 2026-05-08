@@ -34,11 +34,13 @@ NEXT_ID = 0
 def clear():
     os.system("cls" if os.name == "nt" else "clear")
 
+
 #Func para a opção de voltar ao menu principal
 def back():
     #import de getpass() para input oculto
     from getpass import getpass
-    getpass(f"\n{BOLD}Pressione ENTER para continuar...")
+    getpass(f"\n{BOLD}Pressione ENTER para continuar...{CRESET}")
+
 
 #Basic features / Funcionalidades básicas
 #Criar task [C]
