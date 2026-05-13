@@ -1,5 +1,7 @@
 from fastapi import FastAPI
+from fastapi import Response
 from fastapi import HTTPException
+from schemas import TaskCreate, TaskResponse
 
 from services import (
     create_task,
@@ -12,22 +14,42 @@ from services import (
 app = FastAPI()
 
 #Rotas
-@app.get("/tasks")
+@app.get("/tasks", response_model=TaskResponse) #GET ALL
 def list_tasks():
-    return get_all_tasks()
+    tasks = get_all_tasks()
 
-@app.get("/tasks/{task_id}")
+    if not tasks:
+        return Response(status_code=204)
+
+    return tasks
+
+@app.get("/tasks/{task_id}") #GET
 def read_task(task_id: int):
-    return get_task(task_id)
+    try:
+        return get_task(task_id)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
-@app.post("/tasks")
-def add_task(title: str, description: str):
-    return create_task(title, description)
+@app.post("/tasks", response_model=TaskResponse, status_code=201) #POST
+def add_task(task: TaskCreate):
+    return create_task(task.title, task.description)
 
-@app.patch("/tasks/{task_id}")
+@app.patch("/tasks/{task_id}") #PATCH
 def change_status(task_id: int, status: str):
-    return update_task(task_id, status)
+    try:
+        return update_task(task_id, status)
+    except ValueError as e:
+        message = str(e)
 
-@app.delete("/tasks/{task_id}")
+        if message == "Task not found":
+            raise HTTPException(status_code=404, detail = message)
+        
+        raise HTTPException(status_code=400, detail = message)
+
+@app.delete("/tasks/{task_id}") #DELETE
 def remove_task(task_id: int):
-    return delete_task(task_id)
+    try:
+        delete_task(task_id)
+        return Response(status_code=204)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
