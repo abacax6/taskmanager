@@ -5,21 +5,24 @@ from validators import (
 )
 
 TASK_LIST = {}
+NEXT_ID = 1
 
 def create_task(title: str, description: str):
+    global NEXT_ID
+
     validate_title(title)
     validate_description(description)
 
-    new_id = max(TASK_LIST.keys(), default=0) + 1 #Nova lógica: calcular o novo id para evitar variável global
-
     new_task = {
-        "id": new_id,
+        "id": NEXT_ID,
         "title": title,
         "description": description,
         "status": 'to do' #Já inicializa a nova tarefa com o status "to do"
     }
    
-    TASK_LIST[new_id] = new_task
+    TASK_LIST[NEXT_ID] = new_task
+    NEXT_ID += 1 
+    
     return new_task #Retorna a task alocada em TASK_LIST[]
 
 def get_all_tasks():
@@ -30,6 +33,7 @@ def get_task(task_id: int):
 
     if task is None:
         raise ValueError("Task not found")
+        #raise HTTTPException(status_code=404, detail = "Task not found")
 
     return task
 
