@@ -1,7 +1,7 @@
-# CRUD: Task Manager CLI
-### Um programa simples para gerenciar atividades/tarefas com uma interface amigável no terminal.
+# APIrest: Task Manager
+### APIrest simples feita a partir de um CRUD CLI voltado à criação e gerenciamento de tarefas.
 
-## Funcionalidades
+## Funcionalidades (Você já conhece!)
 - Criar tarefas
 - Listar tarefas
 - Atualizar status
@@ -9,18 +9,29 @@
 
 ## Tecnologia usada
 - Python 3
+- FastAPI
+- Pydantic
 
 ## Como baixar/obter
-1. Abra o terminal e vá até um diretório vazio
-2. Digite o comando para clonar o repositório:  
+1. Assegure-se de ter o python instalado e a biblioteca fastAPI:
 ```bash
-git clone https://github.com/abacax6/taskmanager
+pip install "fastapi[standard]"
+```
+
+2. Abra o terminal e vá até um diretório vazio
+   
+3. Digite o comando para clonar o repositório:  
+```bash
+git clone -b feature/rest-api --single-branch https://github.com/abacax6/taskmanager.git
 ```
 
 ## Como executar
 1. Abrindo o seu terminal na pasta "taskmanager", dentro do diretório onde você clonou o repositório, digite:
 ```bash
-python main.py
+python -m uvicorn api:app --reload 
 ```
-2. Você agora pode testar todas as funcionalidades desse CRUD! 😁
-<img width="306" height="203" alt="image" src="https://github.com/user-attachments/assets/a08420b3-e168-4979-bd18-ac545d91d648" />
+O servidor deverá começar a rodar.
+
+2. Você agora pode testar o APIrest no seu http://localhost:8000/docs#/ através do navegador! 😁
+<img width="1498" height="552" alt="image" src="https://github.com/user-attachments/assets/8030502a-4e45-4967-b6a0-a42b1ee6620f" />
+
