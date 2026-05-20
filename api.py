@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi import Response
 from fastapi import HTTPException
-from schemas import TaskCreate, TaskResponse
+from schemas import TaskCreate, TaskResponse, TaskUpdate
 
 from services import (
     create_task,
@@ -14,7 +14,7 @@ from services import (
 app = FastAPI()
 
 #Rotas
-@app.get("/tasks", response_model=TaskResponse) #GET ALL
+@app.get("/tasks", response_model=list[TaskResponse]) #GET ALL
 def list_tasks():
     tasks = get_all_tasks()
 
@@ -35,9 +35,9 @@ def add_task(task: TaskCreate):
     return create_task(task.title, task.description)
 
 @app.patch("/tasks/{task_id}") #PATCH
-def change_status(task_id: int, status: str):
+def update(task_id: int, task_data: TaskUpdate):
     try:
-        return update_task(task_id, status)
+        return update_task(task_id, task_data)
     except ValueError as e:
         message = str(e)
 

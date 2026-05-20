@@ -4,6 +4,8 @@ from validators import (
     validate_description
 )
 
+from schemas import TaskUpdate
+
 TASK_LIST = {}
 NEXT_ID = 1
 
@@ -37,11 +39,17 @@ def get_task(task_id: int):
 
     return task
 
-def update_task(task_id: int, new_status: str):
+def update_task(task_id: int, task_data: TaskUpdate):
     task = get_task(task_id) #verifica a existência da task
-    validate_status(new_status) #verifica validade do status
+    validate_title((task_data.title))
+    validate_description(task_data.description)
+    validate_status(task_data.status) #verifica validade do status
     
-    task["status"] = new_status
+    task["title"] = task_data.title
+    task["description"] = task_data.description
+    if task_data.status is not None:
+        task["status"] = task_data.status.value
+
     return task
 
 def delete_task(task_id):
