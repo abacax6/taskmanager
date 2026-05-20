@@ -1,8 +1,12 @@
 from fastapi import FastAPI
 from fastapi import Response
 from fastapi import HTTPException
-from schemas import TaskCreate, TaskResponse, TaskUpdate
-
+from schemas import ( 
+    TaskUpdate, 
+    TaskStatus, 
+    TaskCreate, 
+    TaskResponse
+)
 from services import (
     create_task,
     get_all_tasks,
@@ -15,8 +19,8 @@ app = FastAPI()
 
 #Rotas
 @app.get("/tasks", response_model=list[TaskResponse]) #GET ALL
-def list_tasks():
-    tasks = get_all_tasks()
+def list_tasks(q: str | None = None, status: TaskStatus | None = None):
+    tasks = get_all_tasks(q, status)
 
     if not tasks:
         return Response(status_code=204)

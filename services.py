@@ -3,8 +3,12 @@ from validators import (
     validate_title,
     validate_description
 )
-
-from schemas import TaskUpdate
+from schemas import ( 
+    TaskUpdate, 
+    TaskStatus, 
+    TaskCreate, 
+    TaskResponse
+)
 
 TASK_LIST = {}
 NEXT_ID = 1
@@ -27,8 +31,26 @@ def create_task(title: str, description: str):
     
     return new_task #Retorna a task alocada em TASK_LIST[]
 
-def get_all_tasks():
-    return list(TASK_LIST.values())
+def get_all_tasks(q: str | None = None, status: TaskStatus | None = None):
+    tasks = list(TASK_LIST.values())
+
+    #filtro por texto
+    if q:
+        q = q.lower()
+
+        tasks = [
+            task for task in tasks
+            if q in task["title"].lower()
+            or q in task["description"].lower()
+        ]
+
+    #filtro status
+    if status:
+        tasks = [
+            task for task in tasks
+            if task["status"] == status.value
+        ]
+    return tasks
 
 def get_task(task_id: int):
     task = TASK_LIST.get(task_id)
