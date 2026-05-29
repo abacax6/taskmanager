@@ -36,12 +36,20 @@ def read_task(task_id: int):
 
 @app.post("/tasks", response_model=TaskResponse, status_code=201) #POST
 def add_task(task: TaskCreate):
-    return create_task(task.title, task.description)
+    try:
+        return create_task(task.title, task.description)
+    
+    except ValueError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
 
 @app.patch("/tasks/{task_id}") #PATCH
 def update(task_id: int, task_data: TaskUpdate):
     try:
         return update_task(task_id, task_data)
+        
     except ValueError as e:
         message = str(e)
 
