@@ -1,4 +1,3 @@
-# 📊 APIrest: Task Manager 
 ### APIrest simples feita a partir de um CRUD CLI voltado à criação e gerenciamento de tarefas.
 
 ## 👷‍♀️ Funcionalidades (Você já conhece!) 
@@ -6,11 +5,17 @@
 - Listar tarefas
 - Atualizar status
 - Remover tarefas
+- Filtrar tarefas por texto
+- Filtrar tarefas por status
 
 ## 🌌 Tecnologia usada 
 - Python 3
 - FastAPI
 - Pydantic
+- MongoDB
+- PyMongo
+- Docker
+- Docker Compose
 
 ## 💻 Setup 
 
@@ -22,34 +27,54 @@ git clone -b feature/rest-api --single-branch https://github.com/abacax6/taskman
 ```
 
 ### 3. Entre na pasta "taskmanager" pelo terminal
-
-### 4. Criar ambiente virtual
 ```bash
-python -m venv venv
+cd taskmanager
 ```
 
-### 5. Ativar ambiente virtual
+### 4. Crie o arquivo .env
 **Windows**
 ```bash
-venv\Scripts\activate
+Copy-Item .env.example .env
 ```
 
 **Linux/macOS**
 ```bash
-source venv/bin/activate
+cp .env.example .env
 ```
 
-### 6. **Instalar dependências**
+### 5. Suba toda a aplicação
 ```bash
-pip install -r requirements.txt
+docker compose up --build
 ```
+**Esse comando deverá:**
 
-### 7. **Rodar API**
+- Construir a imagem da API
+- Iniciar o container do MongoDB
+- Iniciar o container da API FastAPI
+- Configurar a comunicação entre os serviços
+
+### 🚀 Utilização
+**Após a inicialização dos containers, acesse:**
 ```bash
-python -m uvicorn api:app --reload
+http://localhost:8000/docs
 ```
-O servidor deverá começar a rodar.
+**O Swagger UI será exibido e permitirá testar todos os endpoints da aplicação diretamente pelo navegador.**
 
-### 8. Você agora pode testar o APIrest no seu http://localhost:8000/docs#/ através do navegador! 😁
-<img width="1498" height="552" alt="image" src="https://github.com/user-attachments/assets/8030502a-4e45-4967-b6a0-a42b1ee6620f" />
+<img width="1463" height="904" alt="image" src="https://github.com/user-attachments/assets/1a411623-f99b-4851-8c35-53440454f166" />
 
+
+### 🗄️ Banco de Dados
+**A aplicação utiliza MongoDB para persistência dos dados.**
+
+**Os dados permanecem armazenados em um volume Docker, permitindo que as tarefas continuem disponíveis mesmo após reinicializações dos containers.**
+
+### 🛑 Encerrando a aplicação
+**Para parar os containers:**
+```bash
+docker compose down
+```
+
+**Se desejar remover também os volumes de dados:**
+```bash
+docker compose down -v
+```
