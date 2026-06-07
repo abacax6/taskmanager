@@ -1,8 +1,9 @@
+import os
 from pymongo import MongoClient
 
-client = MongoClient(
-    "mongodb://admin:admin123@localhost:27017/"
-)
+MONGO_URI = os.getenv("MONGO_URI")
+
+client = MongoClient(MONGO_URI)
 
 db = client["taskmanager"]
 
