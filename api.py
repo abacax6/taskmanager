@@ -27,7 +27,7 @@ def list_tasks(q: str | None = None, status: TaskStatus | None = None):
 
     return tasks
 
-@app.get("/tasks/{task_id}") #GET
+@app.get("/tasks/{task_id}", response_model=TaskResponse) #GET
 def read_task(task_id: int):
     try:
         return get_task(task_id)
@@ -45,7 +45,7 @@ def add_task(task: TaskCreate):
             detail=str(e)
         )
 
-@app.patch("/tasks/{task_id}") #PATCH
+@app.patch("/tasks/{task_id}", response_model=TaskResponse) #PATCH
 def update(task_id: int, task_data: TaskUpdate):
     try:
         return update_task(task_id, task_data)
