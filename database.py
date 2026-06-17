@@ -8,3 +8,5 @@ client = MongoClient(MONGO_URI)
 db = client["taskmanager"]
 
 tasks_collection = db["tasks"]
+
+users_collection = db["users"]

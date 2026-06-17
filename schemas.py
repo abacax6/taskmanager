@@ -1,7 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional
 from enum import Enum
 
+#Basic Essentials / CRUD
 class TaskStatus(str, Enum):
     to_do = "to do"
     in_progress = "in progress"
@@ -22,4 +23,15 @@ class TaskUpdate(BaseModel):
     description: str | None = None
     status: TaskStatus | None = None
 
+#Basic Essentials / USER
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
 
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+class UserResponse(BaseModel):
+    id: int
+    email: EmailStr
