@@ -1,4 +1,5 @@
-from database import tasks_collection
+from database import tasks_collection, users_collection
+from auth import hash_password
 from validators import (
     validate_status,
     validate_title,
@@ -10,7 +11,6 @@ from schemas import (
     TaskCreate, 
     TaskResponse
 )
-
 
 def create_task(title: str, description: str):
 
@@ -102,3 +102,39 @@ def delete_task(task_id: int):
     tasks_collection.delete_one({"id": task_id})
 
     return task
+
+def create_user(email, password):
+
+    existing = users_collection.find_one(
+        {"email": email}
+    )
+
+    if existing:
+        raise ValueError(
+            "Email already registered"
+        )
+
+    last_user = users_collection.find_one(
+        sort=[("id",-1)]
+    )
+
+    new_id = (
+        1
+        if last_user is None
+        else last_user["id"] + 1
+    )
+
+    user = {
+        "id": new_id,
+        "email": email,
+        "password": hash_password(password)
+    }
+
+    users_collection.insert_one(
+        user
+    )
+
+    return {
+        "id": new_id,
+        "email": email
+    }

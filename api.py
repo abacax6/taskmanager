@@ -1,18 +1,28 @@
-from fastapi import FastAPI
-from fastapi import Response
-from fastapi import HTTPException
+from fastapi import (
+    FastAPI,
+    Response,
+    HTTPException
+)
 from schemas import ( 
     TaskUpdate, 
     TaskStatus, 
     TaskCreate, 
-    TaskResponse
+    TaskResponse,
+    UserLogin,
+    UserCreate,
+    UserResponse
 )
 from services import (
     create_task,
     get_all_tasks,
     get_task,
     update_task,
-    delete_task
+    delete_task,
+    create_user
+)
+from auth import (
+    authenticate_user,
+    create_access_token
 )
 
 app = FastAPI()
@@ -65,3 +75,52 @@ def remove_task(task_id: int):
         return Response(status_code=204)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
+
+@app.post(
+    "/register",
+    response_model=UserResponse,
+    status_code=201
+)
+def register(
+    user: UserCreate
+):
+
+    try:
+
+        return create_user(
+            user.email,
+            user.password
+        )
+
+    except ValueError as e:
+
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+
+@app.post("/login")
+def login(credentials: UserLogin):
+
+    try:
+
+        user = authenticate_user(
+            credentials.email,
+            credentials.password
+        )
+
+        token = create_access_token(
+            user
+        )
+
+        return {
+            "access_token": token,
+            "token_type": "bearer"
+        }
+
+    except ValueError as e:
+
+        raise HTTPException(
+            status_code=401,
+            detail=str(e)
+        )
