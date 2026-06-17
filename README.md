@@ -34,7 +34,7 @@ cd taskmanager
 ### 4. Crie o arquivo .env
 **Windows**
 ```bash
-Copy-Item .env.example .env
+copy .env.example .env
 ```
 
 **Linux/macOS**
