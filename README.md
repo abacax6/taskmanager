@@ -1,9 +1,12 @@
 ### APIrest simples feita a partir de um CRUD CLI voltado à criação e gerenciamento de tarefas.
 
-## 👷‍♀️ Funcionalidades (Você já conhece!) 
+## 👷‍♀️ Funcionalidades
+- Cadastro de usuário
+e logando no seu usuário, você poderá realizar:
+
 - Criar tarefas
 - Listar tarefas
-- Atualizar status
+- Atualizar tarefas
 - Remover tarefas
 - Filtrar tarefas por texto
 - Filtrar tarefas por status
