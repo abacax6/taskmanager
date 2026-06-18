@@ -2,7 +2,8 @@
 
 ## 👷‍♀️ Funcionalidades
 - Cadastro de usuário
-e logando no seu usuário, você poderá realizar:
+
+  e logando no seu usuário, você poderá realizar:
 
 - Criar tarefas
 - Listar tarefas
