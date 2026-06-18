@@ -1,7 +1,11 @@
+from fastapi.security import (
+    HTTPBearer
+)
 from fastapi import (
     FastAPI,
     Response,
-    HTTPException
+    HTTPException,
+    Depends
 )
 from schemas import ( 
     TaskUpdate, 
@@ -22,59 +26,156 @@ from services import (
 )
 from auth import (
     authenticate_user,
-    create_access_token
+    create_access_token,
+    get_current_user
 )
 
 app = FastAPI()
 
 #Rotas
-@app.get("/tasks", response_model=list[TaskResponse]) #GET ALL
-def list_tasks(q: str | None = None, status: TaskStatus | None = None):
-    tasks = get_all_tasks(q, status)
+@app.get(
+    "/tasks",
+    response_model=list[TaskResponse]
+)
+def list_tasks(
+
+    q: str | None = None,
+    status: TaskStatus | None = None,
+
+    current_user=
+    Depends(
+        get_current_user
+    )
+):
+
+    tasks = get_all_tasks(
+        current_user,
+        q,
+        status
+    )
 
     if not tasks:
-        return Response(status_code=204)
+        return Response(
+            status_code=204
+        )
 
     return tasks
 
-@app.get("/tasks/{task_id}", response_model=TaskResponse) #GET
-def read_task(task_id: int):
-    try:
-        return get_task(task_id)
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+@app.get(
+    "/tasks/{task_id}",
+    response_model=TaskResponse
+)
+def read_task(
+    task_id: int,
+    current_user=
+    Depends(
+        get_current_user
+    )
+):
 
-@app.post("/tasks", response_model=TaskResponse, status_code=201) #POST
-def add_task(task: TaskCreate):
     try:
-        return create_task(task.title, task.description)
-    
+
+        return get_task(
+            task_id,
+            current_user
+        )
+
     except ValueError as e:
+
         raise HTTPException(
-            status_code=400,
+            status_code=404,
             detail=str(e)
         )
 
-@app.patch("/tasks/{task_id}", response_model=TaskResponse) #PATCH
-def update(task_id: int, task_data: TaskUpdate):
+@app.post("/tasks", response_model=TaskResponse, status_code=201)
+def add_task(
+    task: TaskCreate,
+    current_user=Depends(get_current_user)
+):
+
     try:
-        return update_task(task_id, task_data)
-        
+
+        created = create_task(
+            task.title,
+            task.description,
+            current_user
+        )
+    
+        print(created)
+        return created
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+
+@app.patch(
+    "/tasks/{task_id}",
+    response_model=TaskResponse
+)
+def update(
+    task_id: int,
+    task_data: TaskUpdate,
+    current_user=
+    Depends(
+        get_current_user
+    )
+):
+
+    try:
+
+        return update_task(
+            task_id,
+            task_data,
+            current_user
+        )
+
     except ValueError as e:
+
         message = str(e)
 
         if message == "Task not found":
-            raise HTTPException(status_code=404, detail = message)
-        
-        raise HTTPException(status_code=400, detail = message)
 
-@app.delete("/tasks/{task_id}") #DELETE
-def remove_task(task_id: int):
+            raise HTTPException(
+                status_code=404,
+                detail=message
+            )
+
+        raise HTTPException(
+            status_code=400,
+            detail=message
+        )
+
+@app.delete(
+    "/tasks/{task_id}"
+)
+def remove_task(
+    task_id: int,
+    current_user=
+    Depends(
+        get_current_user
+    )
+):
+
     try:
-        delete_task(task_id)
-        return Response(status_code=204)
+
+        delete_task(
+            task_id,
+            current_user
+        )
+
+        return Response(
+            status_code=204
+        )
+
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+
+        raise HTTPException(
+            status_code=404,
+            detail=str(e)
+        )
 
 @app.post(
     "/register",
@@ -100,7 +201,9 @@ def register(
         )
 
 @app.post("/login")
-def login(credentials: UserLogin):
+def login(
+    credentials: UserLogin
+):
 
     try:
 
@@ -118,9 +221,9 @@ def login(credentials: UserLogin):
             "token_type": "bearer"
         }
 
-    except ValueError as e:
+    except ValueError:
 
         raise HTTPException(
             status_code=401,
-            detail=str(e)
+            detail="Invalid credentials"
         )
