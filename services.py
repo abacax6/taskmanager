@@ -12,67 +12,105 @@ from schemas import (
     TaskResponse
 )
 
-def create_task(title: str, description: str):
-
-    validate_title(title)
-    validate_description(description)
-
+def create_task(
+    title,
+    description,
+    current_user
+):
+    
     last_task = tasks_collection.find_one(
         sort=[("id", -1)]
     )
 
-    new_id = 1 if last_task is None else last_task["id"] + 1
+    new_id = (
+        1
+        if last_task is None
+        else last_task["id"] + 1
+    )
 
     new_task = {
         "id": new_id,
         "title": title,
         "description": description,
-        "status": "to do"
+        "status": "to do",
+        "owner_id": current_user["id"]
     }
 
-    tasks_collection.insert_one(new_task)
+    tasks_collection.insert_one(
+        new_task
+    )
 
-def get_all_tasks(q: str | None = None, status: TaskStatus | None = None):
+    print(new_task)
+    return new_task
 
-    tasks = list(tasks_collection.find())
+def get_all_tasks(
+    current_user,
+    q=None,
+    status=None
+):
+
+    filters = {
+        "owner_id": current_user["id"]
+    }
+
+    if status:
+        filters["status"] = status.value
+
+    tasks = list(
+        tasks_collection.find(filters)
+    )
 
     for task in tasks:
         task.pop("_id", None)
 
-    # filtros continuam iguais...
-
-    #filtro por texto
     if q:
+
         q = q.lower()
 
         tasks = [
-            task for task in tasks
-            if q in task["title"].lower()
-            or q in task["description"].lower()
+            task
+            for task in tasks
+            if (
+                q in task["title"].lower()
+                or q in task["description"].lower()
+            )
         ]
 
-    #filtro status
-    if status:
-        tasks = [
-            task for task in tasks
-            if task["status"] == status.value
-        ]
     return tasks
 
-def get_task(task_id: int):
+def get_task(
+    task_id,
+    current_user
+):
 
-    task = tasks_collection.find_one({"id": task_id})
+    task = (
+        tasks_collection.find_one(
+            {
+                "id": task_id,
+                "owner_id":
+                current_user["id"]
+            }
+        )
+    )
 
     if task is None:
-        raise ValueError("Task not found")
+        raise ValueError(
+            "Task not found"
+        )
 
     task.pop("_id", None)
-
     return task
 
-def update_task(task_id: int, task_data: TaskUpdate):
+def update_task(
+    task_id: int, 
+    task_data: TaskUpdate,
+    current_user
+    ):
 
-    task = get_task(task_id)
+    task = get_task(
+        task_id,
+        current_user
+        )
 
     update_fields = {}
 
@@ -89,19 +127,37 @@ def update_task(task_id: int, task_data: TaskUpdate):
         update_fields["status"] = task_data.status.value
 
     tasks_collection.update_one(
-        {"id": task_id},
-        {"$set": update_fields}
+        {
+            "id": task_id,
+            "owner_id": current_user["id"]
+        },
+        {
+            "$set": update_fields
+        }
     )
 
-    return get_task(task_id)
+    return get_task(
+        task_id,
+        current_user
+    )
 
-def delete_task(task_id: int):
+def delete_task(
+    task_id,
+    current_user
+    ):
 
-    task = get_task(task_id)
-
-    tasks_collection.delete_one({"id": task_id})
-
-    return task
+    task = get_task(
+        task_id,
+        current_user
+    )
+    
+    tasks_collection.delete_one(
+    {
+        "id": task_id,
+        "owner_id":
+        current_user["id"]
+    }
+)
 
 def create_user(email, password):
 
