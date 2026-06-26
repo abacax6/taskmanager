@@ -67,7 +67,7 @@ def create_access_token(
 
     expire = (
         datetime.now()
-        + timedelta(hours=1)
+        + timedelta(minutes=15)
     )
 
     payload = {

@@ -14,7 +14,8 @@ from schemas import (
     TaskResponse,
     UserLogin,
     UserCreate,
-    UserResponse
+    UserResponse,
+    UserUpdate
 )
 from services import (
     create_task,
@@ -22,7 +23,8 @@ from services import (
     get_task,
     update_task,
     delete_task,
-    create_user
+    create_user,
+    update_user
 )
 from auth import (
     authenticate_user,
@@ -227,3 +229,20 @@ def login(
             status_code=401,
             detail="Invalid credentials"
         )
+
+@app.patch("/users/me")
+def update_me(
+    user_data: UserUpdate,
+    current_user =
+    Depends(get_current_user)
+):
+
+    update_user(
+        current_user,
+        user_data
+    )
+
+    return {
+        "message":
+        "Account updated. Please login again."
+    }

@@ -194,3 +194,43 @@ def create_user(email, password):
         "id": new_id,
         "email": email
     }
+
+def update_user(current_user, user_data):
+
+    update_fields = {}
+
+    if user_data.email:
+
+        existing = users_collection.find_one(
+            {"email": user_data.email}
+        )
+
+        if (
+            existing
+            and existing["id"]
+            != current_user["id"]
+        ):
+            raise ValueError(
+                "Email already registered"
+            )
+    
+        update_fields["email"] = (
+            user_data.email
+        )
+
+    if user_data.password:
+
+        update_fields["password"] = (
+            hash_password(
+                user_data.password
+            )
+        )
+    
+    users_collection.update_one(
+        {"id": current_user["id"]},
+        {"$set": update_fields}
+    )
+
+    print(update_fields)
+
+    return True

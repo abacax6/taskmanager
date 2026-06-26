@@ -35,3 +35,7 @@ class UserLogin(BaseModel):
 class UserResponse(BaseModel):
     id: int
     email: EmailStr
+
+class UserUpdate(BaseModel):
+    email: EmailStr | None = None
+    password: str | None = None
